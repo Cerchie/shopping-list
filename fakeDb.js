@@ -1,3 +1,3 @@
 global.items = [];
 
-module.exports = cats;
+module.exports = items;
