@@ -27,9 +27,9 @@ describe("GET /items", function () {
         const resp = await request(app).get(`/items`);
         expect(resp.statusCode).toBe(200);
 
-        expect(resp.body).toEqual({
-            items: [pickles]
-        });
+        expect(resp.body).toEqual(
+            items
+        );
     });
 });
 // end
@@ -81,12 +81,14 @@ describe("PATCH /items/:name", function () {
         const resp = await request(app)
             .patch(`/items/${pickles.name}`)
             .send({
-                name: "sour pickles"
+                name: "sour pickles",
+                price: "2.49"
             });
         expect(resp.statusCode).toBe(200);
         expect(resp.body).toEqual({
             item: {
-                name: "sour pickles"
+                name: "sour pickles",
+                price: "2.49"
             }
         });
     });
