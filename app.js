@@ -1,58 +1,25 @@
 const express = require("express")
-const router = new express.Router()
-const ExpressError = require("./expressError")
-const items = require("./fakeDb")
 const app = express();
+const itemsRoutes = require("./routes/items")
+const ExpressError = require("./expressError")
 
-router.get("/", function (req, res) {
-    res.json({
-        items
+app.use(express.json());
+app.use("./routes/items", itemsRoutes);
+
+/** 404 handler */
+
+app.use(function (req, res, next) {
+    return new ExpressError("Not Found", 404);
+});
+
+/** general error handler */
+
+app.use((err, req, res, next) => {
+    res.status(err.status || 500);
+
+    return res.json({
+        error: err.message,
     });
 });
 
-
-router.post("/", function (req, res) {
-    const newItem = {
-        name: req.body.name,
-        price: req.body.price
-    }
-    items.push(newItem)
-    res.status(201).json({
-        item: newItem
-    })
-})
-
-router.get("/:name", function (req, res) {
-    const foundItem = items.find(item => item.name === req.params.name)
-    if (foundItem === undefined) {
-        throw new ExpressError("Item not found", 404)
-    }
-    res.json({
-        item: foundItem
-    })
-})
-
-router.patch("/:name", function (req, res) {
-    const foundItem = items.find(item => item.name === req.params.name)
-    if (foundItem === undefined) {
-        throw new ExpressError("Item not found", 404)
-    }
-    foundItem.name = req.body.name
-    res.json({
-        item: foundItem
-    })
-})
-
-router.delete("/:name", function (req, res) {
-    const foundItem = items.findIndex(item => item.name === req.params.name)
-    if (foundItem === -1) {
-        throw new ExpressError("Item not found", 404)
-    }
-    items.splice(foundItem, 1)
-    res.json({
-        message: "Deleted"
-    })
-})
-
-module.exports = router;
-module.exports = app;
+module.exports = app
